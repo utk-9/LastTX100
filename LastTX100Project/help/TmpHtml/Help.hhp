@@ -1,0 +1,48 @@
+[OPTIONS]
+Language=0x0409
+Default Font=Arial,8,0
+TITLE=LastTX100 Help
+Full-text search=Yes
+Display compile notes=YES
+Display compile progress=YES
+Compatibility=1.1
+Auto Index=No
+Default Window=Main
+Compiled file=Help.chm
+Error Log file=Help.log
+Contents file=Help.hhc
+Index File=Help.hhk
+Default Topic=about.html
+[FILES]
+about.html
+general1.html
+support.html
+order.html
+solution.html
+gettingstarted.html
+mainmenu.html
+toolbar.html
+levels.html
+scoring.html
+navigation.html
+future.html
+help.png
+nexttopic.png
+prevtopic.png
+[WINDOWS]
+Main=,"Help.hhc","Help.hhk","about.html","about.html",,,,,0x061520,200,0x00304E,[50,50,850,450],0x307e,,,,,,,,0
+[ALIAS]
+about=about.html
+general1=general1.html
+support=support.html
+order=order.html
+solution=solution.html
+gettingstarted=gettingstarted.html
+mainmenu=mainmenu.html
+toolbar=toolbar.html
+levels=levels.html
+scoring=scoring.html
+navigation=navigation.html
+future=future.html
+[MAP]
+#include Help.h

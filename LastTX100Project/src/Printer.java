@@ -1,0 +1,152 @@
+import java.awt.*;
+import javax.swing.*;
+import java.awt.print.*;
+import java.util.ArrayList;
+
+/**Class Printer<p>
+  * This class manages the printing and all the printer functions.
+  * <p>
+  * <b>Instance Variables: </b>
+  * <p>
+  * highscores1: level 1 highscores
+  * <p>
+  * highscores2: level 2 highscores
+  * <p>
+  * highscores3: level 3 highscores
+  * <p>
+  * usernames1: level 1 usernames
+  * <p>
+  * usernames2: level 2 usernames
+  * <p>
+  * usernames3: level 3 usernames
+  * <p>
+  * logo: printer logo
+  * 
+  * @author Nikita Lizogubenko
+ * */
+public class Printer implements Printable
+{
+  ArrayList<String> highScores1;
+  ArrayList<String> highScores2;
+  ArrayList<String> highScores3;
+  ArrayList<String> usernames1;
+  ArrayList <String> usernames2;
+  ArrayList <String> usernames3;
+  Image logo;
+  
+  /**Constructor<p>
+    * The constructor initializes all the lists using the specified parameters and loads the printer logo.
+    * 
+    * @param names1 usernames level1
+    * @param scores1 highscores level1
+    * @param names2 usernames level2
+    * @param scores2 highscores level2
+    * @param names3 usernames level3
+    * @param scores3 highscores level3
+   * */
+  public Printer(ArrayList<String> names1,ArrayList<Long> scores1,ArrayList<String> names2,ArrayList<Long> scores2,
+                 ArrayList<String> names3,ArrayList<Long> scores3)
+  {
+    logo = (new ImageIcon("resources\\images\\arc.png")).getImage();
+    refresh(names1,scores1,names2,scores2,names3,scores3);
+  }
+  
+  /**Mehthod public int print (Graphics g, PageFormat pf, int page)<p>
+    * This method defines and positions all the text to be printed.
+    * 
+    * @param g graphics object used to print
+    * @param pf page format object
+    * @param page page spcified
+    * @return int value representing whether the page exists or not
+    * @throws PrinterException
+   * */
+  public int print(Graphics g, PageFormat pf, int page) throws PrinterException 
+  {
+    if (page > 0) 
+    {
+      return NO_SUCH_PAGE;
+    }
+    
+    Graphics2D g2d = (Graphics2D)g;
+    g2d.translate(pf.getImageableX(), pf.getImageableY());
+    g.drawImage (logo, 230, 25, null);
+    g.drawString ("LastTX100 HIGHSCORES", 230, 100);
+    g.drawString("LEVEL 1", 80, 150);
+    g.drawString("LEVEL 2", 250, 150);
+    g.drawString("LEVEL 3", 410, 150);
+    
+    for(int x = 0; x < highScores1.size();x++)
+    {
+      g.drawString (usernames1.get(x), 50, 190+x*30);
+      g.drawString(highScores1.get(x), 120, 190+x*30);
+    }
+    for(int x = 0; x < highScores2.size();x++)
+    {
+      g.drawString (usernames2.get(x), 220, 190+x*30);
+      g.drawString(highScores2.get(x), 290, 190+x*30);
+    }
+    for(int x = 0; x < highScores3.size();x++)
+    {
+      g.drawString (usernames3.get(x), 380, 190+x*30);
+      g.drawString(highScores3.get(x), 450, 190+x*30);
+    }
+
+    return PAGE_EXISTS;
+  }
+  
+  /**public void printPlease()<p>
+    * This method shows the print dialog and prints the highscores.
+   * */
+  public void printPlease()
+  {
+    try
+    {
+    PrinterJob job = PrinterJob.getPrinterJob();
+    job.setPrintable(this);
+    if (job.printDialog()) {
+    job.print();
+    }
+    }
+    catch(PrinterException e)
+    {
+    }
+  }
+  
+  /**Method public void refresh (ArrayList names1,ArrayList scores1,ArrayList names2,
+    * ArrayList scores2,ArrayList names3,ArrayList scores3)<p>
+    * This method refreshed all the lists using the parameter lists.
+    * 
+    * @param names1 usernames level1
+    * @param scores1 highscores level1
+    * @param names2 usernames level2
+    * @param scores2 highscores level2
+    * @param names3 usernames level3
+    * @param scores3 highscores level3                     
+   * */
+  public void refresh(ArrayList<String> names1,ArrayList<Long> scores1,ArrayList<String> names2,
+                      ArrayList<Long> scores2,ArrayList<String> names3,ArrayList<Long> scores3)
+  {
+    highScores1 = new ArrayList<String>();
+    highScores2 = new ArrayList<String>();
+    highScores3 = new ArrayList<String>();
+    usernames1 = new ArrayList<String>();
+    usernames2 = new ArrayList<String>();
+    usernames3 = new ArrayList<String>();
+    
+    for(int x = 0; x < names1.size();x++)
+    {
+      highScores1.add(SecondaryPanel.formatTime(scores1.get(x)));
+      usernames1.add(names1.get(x));
+    }
+    for(int x = 0; x < names2.size();x++)
+    {
+      highScores2.add(SecondaryPanel.formatTime(scores2.get(x)));
+      usernames2.add(names2.get(x));
+    }
+    for(int x = 0; x < names3.size();x++)
+    {
+      highScores3.add(SecondaryPanel.formatTime(scores3.get(x)));
+      usernames3.add(names3.get(x));
+    }
+  }
+}

@@ -1,0 +1,197 @@
+import javax.swing.ImageIcon;
+import java.util.ArrayList;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.FontMetrics;
+import java.awt.Font;
+import java.awt.Color;
+
+/**SecondaryPanel class <p>
+  * This class is responsible for managing and displaying all the secondary components 
+  * of the game. It include lives, time, enemies killed and capital selection.
+  * It updates the capital option when needed, correctly formats the time to be displayed
+  * and paints the string in correct centered alignment.
+  * <p>
+  * <b>Instance Variables: </b>
+  * <p>
+  * capitals: String arraylist containing the capitals
+  * <p>
+  * optionPositions: array of the 4 option positions (up, down, right, left)
+  * <p>
+  * selection: which option is selected
+  * <p>
+  * game: instance of game
+  * <p>
+  * life: heart image representing life
+  * <p>
+  * enemyKilled: # of enemies killed
+  * <p>
+  * gameTime: total time elapsed in gameplay (excluding pause)
+  * <p>
+  * pauseStartTime: time game was paued
+  * <p>
+  * pauseTime: total time game was paused
+  * <p>
+  * gameStartTime: time game was started
+  * <p>
+  * upSelector, downSelector, rightSelector, leftSelector: up, down, right, left arrow icons
+  * <p>
+  * selectionBorder: border image to highlight selection
+  * <p>
+  * background: background image
+  * 
+  * @author Utkarsh Lamba
+ * */
+public class SecondaryPanel{
+  
+  public ArrayList<String> capitals;
+  public static String[] optionPositions = {"UP","DOWN","RIGHT","LEFT"};
+  public String selectedCapital;
+  public int selection;
+  private Game game;
+  private Image life;
+  
+  public int enemyKilled;
+  
+  public long gameTime;
+  public long pauseStartTime;
+  public long pauseTime;
+  public long gameStartTime;
+  
+  public Image upSelector;
+  public Image downSelector;
+  public Image rightSelector;
+  public Image leftSelector;
+  public Image selectionBorder;
+  
+  private Image background;
+  
+  /**Constructor<p>
+    * The constructor loads the capitals array list and the images and initializes other variables to
+    * initial values.
+    * 
+    * @param game game object reference
+    * @param capitalFileName path to file containing the capitals
+    * @param capitalHeader capitals file header
+   * */
+  public SecondaryPanel(Game game, String capitalFileName, String capitalHeader) {
+    upSelector = (new ImageIcon("resources\\images\\UpArrow.png")).getImage();
+    downSelector = (new ImageIcon("resources\\images\\DownArrow.png")).getImage();
+    rightSelector = (new ImageIcon("resources\\images\\RightArrow.png")).getImage();
+    leftSelector = (new ImageIcon("resources\\images\\LeftArrow.png")).getImage();
+    selectionBorder = (new ImageIcon("resources\\images\\selectionBorder2.png")).getImage();
+    
+    background = (new ImageIcon("resources\\images\\blackBg.png")).getImage();
+
+    selection = -1;
+    
+    gameTime = 0;
+    pauseStartTime = 0;
+    pauseTime = 0;
+    
+    capitals = ReadFile.getArrayItems (capitalFileName, capitalHeader);
+    selectedCapital = "";
+    this.game = game;
+    life = (new ImageIcon ("resources\\images\\life.png")).getImage();
+    enemyKilled = 0;
+  }
+  
+  /**Method public void updateOptions()<p>
+    * This method update the capital options based on the current country.
+    * One is the correct answer and others are randomly selected from the list. These options
+    * are randomly placed in option positions (up, down, right, left).
+    * 
+   * */
+  public void updateOptions() {
+    ArrayList<String> temp = new ArrayList <String> ();
+    for (String s: capitals){
+      if  (!s.equals (capitals.get(game.hero.currentIndex))) temp.add(s);
+    }
+    int random = (int)(Math.random()*4);  
+    optionPositions [random] = capitals.get(game.hero.currentIndex);
+    for (int i = 0; i< optionPositions.length; i++){
+      if (i!=random){
+        int index = (int)(Math.random()*temp.size());
+        optionPositions [i] = (String) (temp.get(index));
+        temp.remove(index);
+      }
+    }
+    selection = -1;
+  }
+  
+  /**Method public static String formatTime (long time)<p>
+    * This method formats the time in nano seconds to MM:SS format
+    * 
+   * */
+  public static String formatTime (long time){
+   String secString, minString;
+   int sec = (int)(time/1000000000); 
+   int min = sec/60;
+   sec = sec - (min*60);
+   
+   if (min<=9) {
+     minString = "0" + Integer.toString(min);
+   }
+   else {
+     minString = "" + Integer.toString(min);
+   }
+   
+   if (sec<=9) {
+     secString = "0" + Integer.toString(sec);
+   }
+   else {
+     secString = "" + Integer.toString(sec);
+   }
+   
+   return minString + ":" + secString;   
+  }
+  
+  /**Method public void paint (Graphics2D g, int lives)<p>
+    * This method paints all the secondary components of the game on the screen.
+    * 
+    * @param g graphics object used to paint on screen
+    * @param lives how many lives player has left
+   * */
+  public void paint (Graphics2D g, int lives) {
+    g.setColor (Color.WHITE);
+    g.drawImage (background, 802, 0, null);
+    g.drawImage (upSelector, 895, 225, null);
+    g.drawImage (rightSelector, 950, 265, null);
+    g.drawImage (downSelector, 895, 300, null);
+    g.drawImage (leftSelector, 840, 265, null);
+    if (selection ==0) g.drawImage (selectionBorder, 890, 220, null);
+    else if (selection ==1) g.drawImage (selectionBorder, 945, 260, null);
+    else if (selection ==2) g.drawImage (selectionBorder, 890, 295, null);
+    else {
+      if (selection == 3) g.drawImage (selectionBorder, 835, 260, null);
+    }
+    drawCenteredString (optionPositions[0], 222, 795, 215, g);
+    drawCenteredString (optionPositions[1], 100, 913, 262, g);
+    drawCenteredString (optionPositions[2], 222, 795, 345, g);
+    drawCenteredString (optionPositions[3], 100, 800, 262, g);
+    g.drawString ("Enemy Killed: " + enemyKilled, 840, 400);
+    g.drawString ("Time: " + formatTime (gameTime), 840, 440);
+    
+    int horVal = 825;
+    for (int i = 0; i<lives; i++){
+      g.drawImage (life,horVal, 80, null);
+      horVal += 35;
+    }    
+    g.setColor (Color.BLACK);             
+  }
+  
+  /**Method public void drawCenteredString(String s, int w, int startX, int h, Graphics2D g)<p>
+    * This method paint the specified string in centered alignmnet.
+    * 
+    * @param s string to be painted
+    * @param w width of the area
+    * @param startX staring x cordinate of the painting area
+    * @param g graphics object used to paint
+    * 
+   * */
+  public void drawCenteredString(String s, int w, int startX, int h, Graphics2D g) {
+    FontMetrics fm = g.getFontMetrics();
+    int x = (w - fm.stringWidth(s)) / 2;
+    g.drawString(s, startX + x, h);
+  }
+}
